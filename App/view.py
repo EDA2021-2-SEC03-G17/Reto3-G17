@@ -20,11 +20,16 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
+
+
 import config as cf
+assert cf
 import sys
 import controller
+from DISClib.ADT import map as mp
 from DISClib.ADT import list as lt
-assert cf
+from DISClib.DataStructures import rbt 
+
 
 
 """
@@ -33,14 +38,33 @@ Presenta el menu de opciones y por cada seleccion
 se hace la solicitud al controlador para ejecutar la
 operación solicitada
 """
+#MENU
 
 def printMenu():
-    print("Bienvenido")
-    print("1- Cargar información en el catálogo")
-    print("2- ")
+    print("___________________________________________")
+    print("    BIENVENIDO AL CATALOGO DE UFO's")
+    print("___________________________________________")
+    print("")
+    print("1 ) Cargar información en el catálogo")
+    print("0 ) Salir")
+    print("")
+    print("___________________________________________")
+
+#CARGA DE DATOS [1]
+def initCatalog():
+    return controller.initCatalog()
+
+def loadData(catalog):
+    controller.loadData(catalog)
 
 catalog = None
 
+"""
+La vista se encarga de la interacción con el usuario
+Presenta el menu de opciones y por cada seleccion
+se hace la solicitud al controlador para ejecutar la
+operación solicitada
+"""
 """
 Menu principal
 """
@@ -48,8 +72,10 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
+        catalog = initCatalog()
         print("Cargando información de los archivos ....")
-
+        loadData(catalog)
+        print (catalog)
     elif int(inputs[0]) == 2:
         pass
 

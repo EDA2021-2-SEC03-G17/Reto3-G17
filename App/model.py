@@ -30,16 +30,24 @@ from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.DataStructures import rbt 
 assert cf
 
 """
 Se define la estructura de un catálogo de videos. El catálogo tendrá dos listas, una para los videos, otra para las categorias de
 los mismos.
 """
-
+def newCatalog():
+    catalogo = {}
+    catalogo['Avistamientos'] = rbt.newMap(ordenamientoAlfabetico)
+    return catalogo
 # Construccion de modelos
 
 # Funciones para agregar informacion al catalogo
+def addUFO(catalog, ufo):
+    ufoInfo = {'datetime':ufo['datetime'],'duration':ufo['duration (seconds)'], 'shape':ufo['shape']} 
+    
+    rbt.put(catalog['Avistamientos'],ufo['country'],ufoInfo)
 
 # Funciones para creacion de datos
 
@@ -48,3 +56,17 @@ los mismos.
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento
+def ordenamientoAlfabetico(ciudad1,ciudad2):
+    
+    primera_letra1 = None
+    primera_letra2 = None
+    if ciudad1 != '':
+        primera_letra1 = ord(ciudad1[0])
+    else:
+        primera_letra1 = ord('z')
+    
+    if ciudad2 != '':
+        primera_letra2 = ord(ciudad2[0])
+    else:
+        primera_letra2 = ord('z')
+    return primera_letra1 > primera_letra2

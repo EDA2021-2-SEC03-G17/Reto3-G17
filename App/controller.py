@@ -70,3 +70,22 @@ def ufoporciudad(catalog,city):
 #CONSULTA
 def listsize(listaufo):
     return model.listsize(listaufo)
+    
+# Funciones de consulta sobre el catálogo
+def citysightings(ciudad):
+    return model.citysightings(ciudad)
+
+def sightingsduration(lim_inferior, lim_superior):
+    return model.sightingsduration(lim_inferior, lim_superior)
+
+def sightingsperhourminute(lim_inferior,lim_superior):
+    return model.sightingsperhourminute(lim_inferior,lim_superior)
+
+def sightingsdaterange(lim_inferior,lim_superior):
+    return model.sightingsdaterange(lim_inferior,lim_superior)
+
+def countsightingsbyzone(lim_inferior,lim_superior):
+    return model.countsightingsbyzone(lim_inferior,lim_superior)
+
+def countsightingsbyzone(lim_inferior,lim_superior):
+    return model.seesightingsbyzone(lim_inferior,lim_superior)

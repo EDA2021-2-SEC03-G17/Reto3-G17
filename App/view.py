@@ -48,7 +48,6 @@ def printMenu():
     print("1 ) Cargar información en el catálogo")
     print("2 ) Contar los avistamientos en una ciudad")
     print("0 ) Salir")
-    print("")
     print("___________________________________________")
 
 #CARGA DE DATOS [1]

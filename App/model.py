@@ -53,6 +53,24 @@ def addUFO(catalog, ufo):
 
 # Funciones de consulta
 
+#Requerimiento 1
+def citysightings(ciudad):
+    return None
+#Requerimiento 2
+def sightingsduration(lim_inferior, lim_superior):
+    return None
+#Requerimiento 3
+def sightingsperhourminute(lim_inferior,lim_superior):
+    return None
+#Requerimiento 4
+def sightingsdaterange(lim_inferior,lim_superior):
+    return None
+#Requerimiento 5
+def countsightingsbyzone(lim_inferior,lim_superior):
+    return None
+#Requerimiento 6
+def countsightingsbyzone(lim_inferior,lim_superior):
+    return None
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento

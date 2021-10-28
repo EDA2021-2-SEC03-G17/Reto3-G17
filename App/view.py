@@ -46,8 +46,13 @@ def printMenu():
     print("___________________________________________")
     print("")
     print("1 ) Cargar información en el catálogo")
+    print("2 ) Contar los avistamientos en una ciudad")
+    print("3 ) Contar los avistamientos por duración")
+    print("4 ) Contar avistamientos por Hora/Minutos del día")
+    print("5 ) Contar los avistamientos en un rango de fechas")
+    print("6 ) Contar los avistamientos de una zona geográfica")
+    print("7 ) Visualizar los avistamientos de una zona geográfica")
     print("0 ) Salir")
-    print("")
     print("___________________________________________")
 
 #CARGA DE DATOS [1]
@@ -56,6 +61,7 @@ def initCatalog():
 
 def loadData(catalog):
     controller.loadData(catalog)
+
 
 catalog = None
 
@@ -76,9 +82,44 @@ while True:
         print("Cargando información de los archivos ....")
         loadData(catalog)
         print (catalog)
+    
     elif int(inputs[0]) == 2:
-        pass
+        ciudad = input('Ingrese la ciudad a consultar\n')
+        resultado = controller.citysightings(ciudad)
+        print(resultado)
+    
+    elif int(inputs[0]) == 3:
+        lim_inferior = input('Ingrese el límite inferior de segundos\n')
+        lim_superior = input('Ingrese el límite superior de segundos\n')
+        resultado = controller.sightingsduration(lim_inferior,lim_superior)
+        print(resultado)
 
+    elif int(inputs[0]) == 4:
+        lim_inferior = input('Ingrese el límite inferior en formato HH:MM\n')
+        lim_superior = input('Ingrese el límite superior en formato HH:MM\n')
+        resultado = controller.sightingsduration(lim_inferior,lim_superior)
+        print(resultado)
+
+
+    elif int(inputs[0]) == 5:
+        lim_inferior = input('Ingrese el límite inferior en formato AAAA-MM-DD\n')
+        lim_superior = input('Ingrese el límite superior en formato AAAA-MM-DD\n')
+        resultado = controller.sightingsdaterange(lim_inferior,lim_superior)
+        print(resultado)
+        
+    elif int(inputs[0]) == 6:
+        longitud_min_max = input('Ingrese el límite mínimo y máximo de longitud\n')
+        latitud_min_max = input('Ingrese el límite mínimo y máximo de latitud\n')
+        resultado = controller.countsightingsbyzone(lim_inferior,lim_superior)
+        print(resultado)
+
+    elif int(inputs[0]) == 7:
+        longitud_min_max = input('Ingrese el límite mínimo y máximo de longitud\n')
+        latitud_min_max = input('Ingrese el límite mínimo y máximo de latitud\n')
+        resultado = controller.seesightingsbyzone(lim_inferior,lim_superior)
+        print(resultado)
+        
+        pass
     else:
         sys.exit(0)
 sys.exit(0)

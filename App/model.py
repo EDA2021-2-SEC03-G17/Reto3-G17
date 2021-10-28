@@ -27,10 +27,10 @@
 
 import config as cf
 from DISClib.ADT import list as lt
-from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
 from DISClib.DataStructures import rbt 
+from DISClib.DataStructures import rbtnode as rbn
 assert cf
 
 """
@@ -46,14 +46,51 @@ def newCatalog():
 # Funciones para agregar informacion al catalogo
 def addUFO(catalog, ufo):
     ufoInfo = {'datetime':ufo['datetime'],'duration':ufo['duration (seconds)'], 'shape':ufo['shape']} 
-    
-    rbt.put(catalog['Avistamientos'],ufo['country'],ufoInfo)
+
+    b=rbt.contains(catalog['Avistamientos'], ufo)
+
+    if b:
+
+        a=rbt.get(catalog['Avistamientos'],ufo)
+        a=rbn.getValue(a)
+        lt.addLast(a,ufoInfo)
+        
+    else:
+        lista=lt.newList("ARRAY_LIST",cmpfunction=BYDATE)
+        lt.addLast(lista,ufoInfo)
+        rbt.put(catalog['Avistamientos'],ufo['country'],lista)
+
+# req 1   
+
+def ufoporciudad(catalog,city):
+    if rbt.contains(catalog,city):
+        ufos=rbt.get(catalog,city)
+        ufos=rbn.getValue(ufos)
+    return ufos
 
 # Funciones para creacion de datos
 
 # Funciones de consulta
 
+def listsize(listaufo):
+    return lt.size(listaufo)
+
 # Funciones utilizadas para comparar elementos dentro de una lista
+
+def BYDATE(DATE1,DATE2):
+    if DATE1!="":
+        fecha=DATE1.strip("-: ")
+        fecha=int(fecha)
+    else:
+        fecha=0
+
+    if DATE2!="":
+        fecha1=DATE2.strip("-: ")
+        fecha1=int(fecha)
+    else:
+        fecha1=0
+
+    return fecha>fecha1
 
 # Funciones de ordenamiento
 def ordenamientoAlfabetico(ciudad1,ciudad2):

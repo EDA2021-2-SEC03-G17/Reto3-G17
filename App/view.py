@@ -46,6 +46,7 @@ def printMenu():
     print("___________________________________________")
     print("")
     print("1 ) Cargar información en el catálogo")
+    print("2 ) Contar los avistamientos en una ciudad")
     print("0 ) Salir")
     print("")
     print("___________________________________________")
@@ -57,17 +58,18 @@ def initCatalog():
 def loadData(catalog):
     controller.loadData(catalog)
 
+#REQ1 [2]
+def req1(catalog):
+    city=input("Ingrese el nombre de la ciudad a consultar.")
+    return controller.ufoporciudad(catalog,city)
+
+#CONSULTA
+
+def listSize(listaufo):
+    return controller.listsize(listaufo)
+
 catalog = None
 
-"""
-La vista se encarga de la interacción con el usuario
-Presenta el menu de opciones y por cada seleccion
-se hace la solicitud al controlador para ejecutar la
-operación solicitada
-"""
-"""
-Menu principal
-"""
 while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
@@ -76,8 +78,11 @@ while True:
         print("Cargando información de los archivos ....")
         loadData(catalog)
         print (catalog)
-    elif int(inputs[0]) == 2:
-        pass
+
+    if int(inputs[0]) == 2:
+        listaufo=req1(catalog)
+        len=listSize(listaufo)
+        print("TOTAL UFOS VISTOS: "+ str(len))
 
     else:
         sys.exit(0)

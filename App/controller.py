@@ -53,7 +53,8 @@ def loadData(catalog):
 def loadUFO(catalog):
 
     start_time = time.process_time() 
-    ufosfile = cf.data_dir + 'UFOS-utf8-small.csv'
+    ufosfile = cf.data_dir + "UFOS-utf8-small.csv"
+    #C:\Users\Admin\Documents\Universidad\4TO SEMESTRE\EDA\MODULO 3\Reto3-G17\
     input_file = csv.DictReader(open(ufosfile, encoding='utf-8'))
     for ufo in input_file:
         model.addUFO(catalog, ufo)
@@ -61,14 +62,11 @@ def loadUFO(catalog):
     elapsed_time_mseg = (stop_time - start_time)*1000  
     return elapsed_time_mseg     
 
-"""
-El controlador se encarga de mediar entre la vista y el modelo.
-"""
+#REQ 1
+def ufoporciudad(catalog,city):
+    return model.ufoporciudad(catalog["Avistamientos"],city)
 
-# Inicialización del Catálogo de libros
 
-# Funciones para la carga de datos
-
-# Funciones de ordenamiento
-
-# Funciones de consulta sobre el catálogo
+#CONSULTA
+def listsize(listaufo):
+    return model.listsize(listaufo)

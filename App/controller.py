@@ -70,7 +70,7 @@ def ufoporciudad(catalog,city):
 #CONSULTA
 def listsize(listaufo):
     return model.listsize(listaufo)
-    
+
 # Funciones de consulta sobre el catálogo
 def citysightings(ciudad):
     return model.citysightings(ciudad)

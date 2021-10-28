@@ -30,6 +30,7 @@ from DISClib.ADT import list as lt
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
 from DISClib.DataStructures import rbt 
+from DISClib.ADT import orderedmap as om
 from DISClib.DataStructures import rbtnode as rbn
 assert cf
 
@@ -39,7 +40,7 @@ los mismos.
 """
 def newCatalog():
     catalogo = {}
-    catalogo['Avistamientos'] = rbt.newMap(ordenamientoAlfabetico)
+    catalogo['Avistamientos'] = om.newMap(omaptype='RBT',comparefunction=ordenamientoAlfabetico)
     return catalogo
 # Construccion de modelos
 
@@ -47,11 +48,10 @@ def newCatalog():
 def addUFO(catalog, ufo):
     ufoInfo = {'datetime':ufo['datetime'],'duration':ufo['duration (seconds)'], 'shape':ufo['shape']} 
 
-    b=rbt.contains(catalog['Avistamientos'], ufo)
+    b=rbt.contains(catalog['Avistamientos'], ufo["country"])
 
     if b:
-
-        a=rbt.get(catalog['Avistamientos'],ufo)
+        a=rbt.get(catalog['Avistamientos'],ufo["country"])
         a=rbn.getValue(a)
         lt.addLast(a,ufoInfo)
         
@@ -112,16 +112,4 @@ def BYDATE(DATE1,DATE2):
 
 # Funciones de ordenamiento
 def ordenamientoAlfabetico(ciudad1,ciudad2):
-    
-    primera_letra1 = None
-    primera_letra2 = None
-    if ciudad1 != '':
-        primera_letra1 = ord(ciudad1[0])
-    else:
-        primera_letra1 = ord('z')
-    
-    if ciudad2 != '':
-        primera_letra2 = ord(ciudad2[0])
-    else:
-        primera_letra2 = ord('z')
-    return primera_letra1 > primera_letra2
+    return ciudad1<ciudad2

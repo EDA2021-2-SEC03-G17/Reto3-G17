@@ -26,19 +26,10 @@ import config as cf
 assert cf
 import sys
 import controller
+from DISClib.ADT import orderedmap as om
 from DISClib.ADT import list as lt
 
-
-
-
-"""
-La vista se encarga de la interacción con el usuario
-Presenta el menu de opciones y por cada seleccion
-se hace la solicitud al controlador para ejecutar la
-operación solicitada
-"""
 #MENU
-
 def printMenu():
     print("___________________________________________")
     print("    BIENVENIDO AL CATALOGO DE UFO's")
@@ -75,7 +66,7 @@ while True:
         catalog = initCatalog()
         print("Cargando información de los archivos ....")
         loadData(catalog)
-        print (catalog)
+        print(catalog)
 
     if int(inputs[0]) == 2:
         listaufo=req1(catalog)

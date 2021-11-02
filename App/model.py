@@ -29,9 +29,9 @@ import config as cf
 from DISClib.ADT import list as lt
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
-from DISClib.DataStructures import rbt 
+from DISClib.ADT import map as mp
 from DISClib.ADT import orderedmap as om
-from DISClib.DataStructures import rbtnode as rbn
+import datetime
 assert cf
 
 """
@@ -40,56 +40,72 @@ los mismos.
 """
 def newCatalog():
     catalogo = {}
-    catalogo['Avistamientos'] = om.newMap(omaptype='RBT',comparefunction=ordenamientoAlfabetico)
+    catalogo["info"]= lt.newList('SINGLE_LINKED', compareDates)
+    catalogo['Ciudad'] = mp.newMap(15225, maptype='PROBING', loadfactor=4.0)
     return catalogo
 # Construccion de modelos
 
 # Funciones para agregar informacion al catalogo
 def addUFO(catalog, ufo):
+
+    lt.addLast(catalog["info"], ufo)
+
     ufoInfo = {'datetime':ufo['datetime'],'duration':ufo['duration (seconds)'], 'shape':ufo['shape']} 
 
-    b=rbt.contains(catalog['Avistamientos'], ufo["country"])
+    c=ufo['city']
+    if ufo["city"]=="":
+        c="city"
+    date1=ufo["datetime"]
+    date1 =datetime.datetime.strptime(date1, '%Y-%m-%d %H:%M:%S')
 
-    if b:
-        a=rbt.get(catalog['Avistamientos'],ufo["country"])
-        a=rbn.getValue(a)
-        lt.addLast(a,ufoInfo)
-        
+    b=mp.get(catalog['Ciudad'], c)
+
+    if b is not None:
+        print(c)
+        a=me.getValue(b)
+        om.put(a, date1.date(), ufoInfo)
+           
     else:
-        lista=lt.newList("ARRAY_LIST",cmpfunction=BYDATE)
-        lt.addLast(lista,ufoInfo)
-        rbt.put(catalog['Avistamientos'],ufo['country'],lista)
+
+        tree=om.newMap(omaptype='BST', comparefunction=compareDates)
+        om.put(tree, date1.date(), ufoInfo)
+        mp.put(catalog['Ciudad'],c,tree)
+        
 
 # req 1   
 
 def ufoporciudad(catalog,city):
-    if rbt.contains(catalog,city):
-        ufos=rbt.get(catalog,city)
-        ufos=rbn.getValue(ufos)
+    if om.contains(catalog,city):
+        ufos=om.get(catalog,city)
+        ufos=me.getValue(ufos)
     return ufos
 
 # Funciones para creacion de datos
 
 # Funciones de consulta
-
 def listsize(listaufo):
     return lt.size(listaufo)
 
 #Requerimiento 1
 def citysightings(ciudad):
     return None
+
 #Requerimiento 2
 def sightingsduration(lim_inferior, lim_superior):
     return None
+
 #Requerimiento 3
 def sightingsperhourminute(lim_inferior,lim_superior):
     return None
+
 #Requerimiento 4
 def sightingsdaterange(lim_inferior,lim_superior):
     return None
+
 #Requerimiento 5
 def countsightingsbyzone(lim_inferior,lim_superior):
     return None
+
 #Requerimiento 6
 def countsightingsbyzone(lim_inferior,lim_superior):
     return None
@@ -113,3 +129,21 @@ def BYDATE(DATE1,DATE2):
 # Funciones de ordenamiento
 def ordenamientoAlfabetico(ciudad1,ciudad2):
     return ciudad1<ciudad2
+
+def compareIds(id1, id2):
+
+    if (id1 == id2):
+        return 0
+    elif id1 > id2:
+        return 1
+    else:
+        return -1
+
+def compareDates(date1, date2):
+
+    if (date1 == date2):
+        return 0
+    elif (date1 > date2):
+        return 1
+    else:
+        return -1

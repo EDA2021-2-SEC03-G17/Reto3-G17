@@ -61,7 +61,6 @@ def addUFO(catalog, ufo):
     b=mp.get(catalog['Ciudad'], c)
 
     if b is not None:
-        print(c)
         a=me.getValue(b)
         om.put(a, date1.date(), ufoInfo)
            
@@ -71,7 +70,6 @@ def addUFO(catalog, ufo):
         om.put(tree, date1.date(), ufoInfo)
         mp.put(catalog['Ciudad'],c,tree)
         
-
 # req 1   
 
 def ufoporciudad(catalog,city):

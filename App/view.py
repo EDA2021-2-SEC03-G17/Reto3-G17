@@ -50,6 +50,7 @@ def printMenu():
     print("2 ) Contar los avistamientos en una ciudad")
     print("3 ) Contar los avistamientos por duración")
     print("5 ) Contar los avistamientos en un rango de fechas")
+    print("4 ) Contar los avistamientos por hora/minutos del día")
     print("0 ) Salir")
     print("________________________________________________________")
 
@@ -78,6 +79,12 @@ def avistamientos_fechas(catalog):
     fecha_fin= int(input("Ingrese límite superior en formato AAAA-MM-DD: ").replace("-",''))
     fechas_en_rango=controller.sightingsperdate(catalog,fecha_inicio,fecha_fin)
     return fechas_en_rango
+    
+#REQ3 [4]
+def req3(catalog):
+    lim_inf=input("Ingrese el limite inferior en formato HH: MM\n")
+    lim_sup=input("Ingrese el limite superior en formato HH: MM\n")
+    return controller.ufoporhoraminuto(catalog,lim_inf, lim_sup)
 
 #CONSULTA
 
@@ -116,7 +123,14 @@ while True:
         print("The first 3 and last 3 UFO sightings in the duration time are: ")
         print(muestra1)
         
-                        
+                    
+    elif int(inputs[0]) == 2:
+        listaufo=req1(catalog)
+        print(listaufo)
+    
+    elif int(inputs[0]) == 4:
+        listaufo=req3(catalog)
+        print(listaufo)
     else:
         sys.exit(0)
 sys.exit(0)

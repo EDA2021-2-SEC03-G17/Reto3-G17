@@ -37,6 +37,7 @@ def printMenu():
     print("")
     print("1 ) Cargar información en el catálogo")
     print("2 ) Contar los avistamientos en una ciudad")
+    print("4 ) Contar los avistamientos por hora/minutos del día")
     print("0 ) Salir")
     print("___________________________________________")
 
@@ -52,6 +53,12 @@ def req1(catalog):
     city=input("Ingrese el nombre de la ciudad a consultar.")
     return controller.ufoporciudad(catalog,city)
 
+#REQ3 [4]
+def req3(catalog):
+    lim_inf=input("Ingrese el limite inferior en formato HH: MM\n")
+    lim_sup=input("Ingrese el limite superior en formato HH: MM\n")
+    return controller.ufoporhoraminuto(catalog,lim_inf, lim_sup)
+
 #CONSULTA
 
 def listSize(listaufo):
@@ -66,13 +73,14 @@ while True:
         catalog = initCatalog()
         print("Cargando información de los archivos ....")
         loadData(catalog)
-        print(catalog)
-
-    if int(inputs[0]) == 2:
+        print(catalog['Ciudad'])
+    elif int(inputs[0]) == 2:
         listaufo=req1(catalog)
-        len=listSize(listaufo)
-        print("TOTAL UFOS VISTOS: "+ str(len))
-
+        print(listaufo)
+    
+    elif int(inputs[0]) == 4:
+        listaufo=req3(catalog)
+        print(listaufo)
     else:
         sys.exit(0)
 sys.exit(0)

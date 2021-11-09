@@ -25,12 +25,14 @@
  """
 
 
+from DISClib.DataStructures.arraylist import defaultfunction
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
 from DISClib.ADT import map as mp
 from DISClib.ADT import orderedmap as om
+from DISClib.DataStructures import rbtnode as rbn
 import datetime
 assert cf
 
@@ -56,57 +58,75 @@ def addUFO(catalog, ufo):
     if ufo["city"]=="":
         c="city"
     date1=ufo["datetime"]
-    date1 =datetime.datetime.strptime(date1, '%Y-%m-%d %H:%M:%S')
+    date1=date1[0:10]
+    date1=int(date1.replace('-',''))
 
     b=mp.get(catalog['Ciudad'], c)
 
     if b is not None:
         a=me.getValue(b)
-        om.put(a, date1.date(), ufoInfo)
+        om.put(a, date1, ufoInfo)
            
     else:
 
-        tree=om.newMap(omaptype='BST', comparefunction=compareDates)
-        om.put(tree, date1.date(), ufoInfo)
+        tree=om.newMap(omaptype='RBT', comparefunction=defaultfunction)
+        om.put(tree, date1, ufoInfo)
         mp.put(catalog['Ciudad'],c,tree)
         
 # req 1   
 
 def ufoporciudad(catalog,city):
-    if om.contains(catalog,city):
-        ufos=om.get(catalog,city)
-        ufos=me.getValue(ufos)
-    return ufos
+    mapa = catalog['Ciudad']
+    avistamientos = mp.size(mapa)
+    arbol_avistamientos_ciudad = me.getValue(mp.get(mapa,city))
+    total_avistamientos_ciudad = om.size(arbol_avistamientos_ciudad)
+    mapa_copia = om.newMap('RBT',compareDates)
+    lista_llaves = om.keySet(arbol_avistamientos_ciudad)
+    for i in lt.iterator(lista_llaves):
+        pareja = om.get(arbol_avistamientos_ciudad,i)
+        value = rbn.getValue(pareja)
+        om.put(mapa_copia,i,value)
+    i = 0
+    i2 = 0
+    list = lt.newList('ARRAY_LIST')
+    while i < 3:
+        menor_llave = om.minKey(mapa_copia)
+        pareja = om.get(mapa_copia, menor_llave)
+        info = rbn.getValue(pareja)
+        lt.addLast(list,info)
+        om.remove(mapa_copia,menor_llave)
+        i+=1
+    while i2 < 3:
+        mayor_llave = om.maxKey(mapa_copia)
+        pareja = om.get(mapa_copia, mayor_llave)
+        info = rbn.getValue(pareja)
+        lt.addLast(list,info)
+        om.remove(mapa_copia,mayor_llave)
+        i2+=1
+    lt.exchange(list, 4, 6)
+    return 'El total de avistamientos es ' + str(avistamientos) + ' y el total de avistamientos en ' + str(city) + ' es ' + str(total_avistamientos_ciudad), list
 
+# REQ 3
+def ufoporhoraminuto(catalog, lim_inf, lim_sup):
+    ufos_list = catalog['info']
+    lim_inf_fixed = int(lim_inf.replace(':',''))
+    lim_sup_fixed = int(lim_sup.replace(':',''))
+    answer = lt.newList('ARRAY_LIST')
+    for ufo in lt.iterator(ufos_list):
+        time = ufo['datetime']
+        timefixed = int(time[11:].replace(':',''))
+        if timefixed >= lim_inf_fixed and timefixed <= lim_sup_fixed:
+            dict_temporal = {'datetime':ufo['datetime'], 'city':ufo['city'], 'state':ufo['state'], 
+            'country':ufo['country'], 'shape':ufo['shape'], 'duration':ufo['duration (seconds)']}
+            lt.addLast(answer,dict_temporal)
+    x=lt.size(answer)
+    print(x)
 # Funciones para creacion de datos
 
 # Funciones de consulta
 def listsize(listaufo):
     return lt.size(listaufo)
 
-#Requerimiento 1
-def citysightings(ciudad):
-    return None
-
-#Requerimiento 2
-def sightingsduration(lim_inferior, lim_superior):
-    return None
-
-#Requerimiento 3
-def sightingsperhourminute(lim_inferior,lim_superior):
-    return None
-
-#Requerimiento 4
-def sightingsdaterange(lim_inferior,lim_superior):
-    return None
-
-#Requerimiento 5
-def countsightingsbyzone(lim_inferior,lim_superior):
-    return None
-
-#Requerimiento 6
-def countsightingsbyzone(lim_inferior,lim_superior):
-    return None
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 def BYDATE(DATE1,DATE2):
@@ -145,3 +165,4 @@ def compareDates(date1, date2):
         return 1
     else:
         return -1
+

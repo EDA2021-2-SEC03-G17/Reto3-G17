@@ -75,8 +75,13 @@ def avistamientos_duracion(catalog):
 
 #REQ4 [5] PRUEBA (1945-08-06/1984-11-15)
 def avistamientos_fechas(catalog):
-    fecha_inicio= int(input("Ingrese límite inferior en formato AAAA-MM-DD: ").replace("-",''))
-    fecha_fin= int(input("Ingrese límite superior en formato AAAA-MM-DD: ").replace("-",''))
+    fecha_inicio= input("Ingrese límite inferior en formato AAAA-MM-DD: ")
+    fecha_fin=input("Ingrese límite superior en formato AAAA-MM-DD: ")
+    total=controller.total_sightings(catalog)
+    print("_______________________________________________________")
+    print("There are {} sightings between: {} and {} ".format(total, fecha_inicio, fecha_fin))
+    fecha_inicio= int(fecha_inicio.replace("-",''))
+    fecha_fin= int(fecha_fin.replace("-",''))
     fechas_en_rango=controller.sightingsperdate(catalog,fecha_inicio,fecha_fin)
     return fechas_en_rango
     
@@ -109,19 +114,29 @@ while True:
 
     elif int(inputs[0]) == 3:
         mayor=controller.max_duration(catalog)
-        muestra1,tamanio=avistamientos_duracion(catalog)
+        muestra,tamanio=avistamientos_duracion(catalog)
+        print("_______________________________________________________")
         print("The longest UFO sightings is: " + str(mayor))
         print("There are {} sightings".format(tamanio))
         print("The first 3 and last 3 UFO sightings in the duration time are: ")
-        print(muestra1)
+        muestra1,muestra2=muestra
+        for elements in lt.iterator(muestra1):
+            print(elements)
+        for elements in lt.iterator(muestra2):
+            print(elements)
+
 
     elif int(inputs[0]) == 5:
         mayor=controller.min_date(catalog)
-        muestra1,tamanio=avistamientos_fechas(catalog)
+        muestra,tamanio=avistamientos_fechas(catalog)
         print("The longest UFO sightings is: " + str(mayor))
         print("There are {} sightings".format(tamanio))
         print("The first 3 and last 3 UFO sightings in the duration time are: ")
-        print(muestra1)
+        muestra1,muestra2=muestra
+        for elements in lt.iterator(muestra1):
+            print(elements)
+        for elements in lt.iterator(muestra2):
+            print(elements)
         
                     
     elif int(inputs[0]) == 2:

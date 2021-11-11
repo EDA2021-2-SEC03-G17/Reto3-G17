@@ -24,12 +24,8 @@
  * Dario Correal - Version inicial
  """
 
-
-<<<<<<< HEAD
 from DISClib.DataStructures.bst import put
-=======
 from DISClib.DataStructures.arraylist import defaultfunction
->>>>>>> f98dc59e2db32deb1ada752b914699836e0fd3d4
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.DataStructures import mapentry as me
@@ -91,10 +87,11 @@ def ufobyduration(catalog,ufo):
     if inCatalog is not None:
         llave=me.getValue(inCatalog)
         lt.addLast(llave,ufoInfo)
+        sa.sort(llave, compareCountryCity)
         
            
     else:
-        info=lt.newList("ARRAY_LIST",cmpfunction=compareCityState, key=None)
+        info=lt.newList("ARRAY_LIST",cmpfunction=compareCountryCity, key=None)
         lt.addLast(info,ufoInfo)
         om.put(catalog["Duracion"], duration, info)
 
@@ -177,7 +174,9 @@ def citysightings(ciudad):
 
 
 #Requerimiento 2
-"""Revisar Ordenamiento de Ciudad-Estado"""
+def total_sightings(catalog):
+    total=om.size(catalog)
+    return total
 
 def max_duration(catalog):
     avistamiento_mayor_duracion=om.maxKey(catalog)
@@ -186,28 +185,18 @@ def max_duration(catalog):
 def sightingsdurationrange(catalog,lim_inferior, lim_superior):
 
     duracion_rango=om.values(catalog,lim_inferior, lim_superior)
-    muestra = first_last_three (duracion_rango)
-
-    size=0
+    size = 0
     for element in lt.iterator(duracion_rango):
         size+=lt.size(element)
-
+    #print(duracion_rango)
+    muestra = first_last_three (duracion_rango)
     return muestra, size
-
-def first_last_three (rango):
-
-    UFOS=lt.firstElement(rango)
-    primerUFOS=lt.subList(UFOS,1,3)
-    ultimoUFOS=lt.lastElement(rango)
-    ultimoUFOS=lt.subList(UFOS,(lt.size(ultimoUFOS)-3),3)
-    return primerUFOS,ultimoUFOS
 
 #Requerimiento 3
 def sightingsperhourminute(lim_inferior,lim_superior):
     return None
 
 #Requerimiento 4
-"""Revisar el size de fecha rango sale 39 en vez de 45"""
 def min_date(catalog):
     avistamiento_menor_fecha=str(om.minKey(catalog))
     avistamiento_menor_fecha=avistamiento_menor_fecha[0:4]+"-"+avistamiento_menor_fecha[4:6]+"-"+avistamiento_menor_fecha[6:8]
@@ -216,44 +205,51 @@ def min_date(catalog):
 def sightingsperdate(catalog,lim_inferior,lim_superior):
 
     fechas_rango=om.values(catalog,lim_inferior, lim_superior)
-    muestra = first_last_three (fechas_rango)
-
     size=lt.size(fechas_rango)
-    print(size)
+    if size==0:
+        muestra = "empty"
+    else:
+        muestra = first_last_three (fechas_rango) 
     return muestra, size
 
 def first_last_three (rango):
 
     tamanio_muestra=3
-    primerosUFOS=lt.newList("ARRAY_LIST")
-    ultimosUFOS=lt.newList("ARRAY_LIST")
+    firstUFOS=lt.newList("ARRAY_LIST")
+    lastUFOS=lt.newList("ARRAY_LIST")
 
     while tamanio_muestra!=0:
         UFOS=lt.removeFirst(rango)
         tam= lt.size(UFOS)
         if tam>=3:
             primerUFOS=lt.subList(UFOS,1,tamanio_muestra)
-            lt.addLast(primerosUFOS,primerUFOS)
+            for UFOSlist in lt.iterator(primerUFOS):
+                lt.addLast( firstUFOS,UFOSlist)
             tamanio_muestra=0
         else:
             primerUFOS=lt.subList(UFOS,1,tam)
-            lt.addLast(primerosUFOS,primerUFOS)
+            for UFOSlist in lt.iterator(primerUFOS):
+                lt.addLast( firstUFOS,UFOSlist)
             tamanio_muestra-=tam
 
     tamanio_muestra=3
     while tamanio_muestra!=0:
         ultimoUFOS=lt.removeLast(rango)
-        tam= lt.size(UFOS)
+        ultimoUFOS=sa.sort(ultimoUFOS,compareCountryCity2)
+        tam= lt.size(ultimoUFOS)
         if tam>=3:
-            ultimoUFOS=lt.subList(UFOS,(lt.size(ultimoUFOS)-3),tamanio_muestra)
-            lt.addFirst(ultimosUFOS,ultimoUFOS)
+            ultimoUFOS=lt.subList(ultimoUFOS,1,tamanio_muestra)
+            for UFOSlist in lt.iterator(ultimoUFOS):
+                lt.addFirst( lastUFOS,UFOSlist)
             tamanio_muestra=0
+
         else:
-            primerUFOS=lt.subList(UFOS,1,tam)
-            lt.addFirst(ultimosUFOS,ultimoUFOS)
+            ultimoUFOS=lt.subList(ultimoUFOS,1,tam)
+            for UFOSlist in lt.iterator(ultimoUFOS):
+                lt.addFirst( lastUFOS,UFOSlist)
             tamanio_muestra-=tam
 
-    return primerosUFOS,ultimosUFOS
+    return  firstUFOS, lastUFOS
 
 #Requerimiento 5
 def countsightingsbyzone(lim_inferior,lim_superior):
@@ -311,10 +307,27 @@ def compareDuration (duration1, duration2):
     else:
         return -1
 
-def compareCityState (ufo1,ufo2):
-    citystate=ufo1["city"]+ufo1["country"]
-    citystate2=ufo1["city"]+ufo2["country"]
-    return citystate<citystate2
+def compareCountryCity (ufo1,ufo2):
+    if ufo1["country"]=="":
+        ufo1["country"]="zz"   
+    if ufo2["country"]=="":
+        ufo2["country"]="zz"  
+    #citystate = ufo1["country"] + ufo1["city"]
+    #citystate2 = ufo2["country"] + ufo2["city"]
+    citystate = ufo1["city"]
+    citystate2 = ufo2["city"]
+    return citystate < citystate2
+
+def compareCountryCity2 (ufo1,ufo2):
+    if ufo1["country"]=="":
+        ufo1["country"]="zz"   
+    if ufo2["country"]=="":
+        ufo2["country"]="zz"  
+    #citystate = ufo1["country"] + ufo1["city"]
+    #citystate2 = ufo2["country"] + ufo2["city"]
+    citystate = ufo1["city"]
+    citystate2 = ufo2["city"]
+    return citystate > citystate2
 
 def compareDate (date1,date2):
 

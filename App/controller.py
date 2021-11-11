@@ -75,6 +75,9 @@ def max_duration(catalog):
     return model.max_duration(catalog["Duracion"])
 
 #REQ 4
+def total_sightings(catalog):
+    return model.total_sightings(catalog["Fechas"])
+    
 def min_date(catalog):
     return model.min_date(catalog["Fechas"])
 

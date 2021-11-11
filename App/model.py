@@ -34,6 +34,7 @@ from DISClib.ADT import map as mp
 from DISClib.ADT import orderedmap as om
 from DISClib.DataStructures import rbtnode as rbn
 import datetime
+import folium
 assert cf
 
 """
@@ -44,12 +45,15 @@ def newCatalog():
     catalogo = {}
     catalogo["info"]= lt.newList('SINGLE_LINKED', compareDates)
     catalogo['Ciudad'] = mp.newMap(15225, maptype='PROBING', loadfactor=4.0)
+    catalogo['Longitud'] = om.newMap('RBT',defaultfunction)
+    catalogo['Hora'] = om.newMap('RBT', defaultfunction)
     return catalogo
 # Construccion de modelos
 
 # Funciones para agregar informacion al catalogo
 def addUFO(catalog, ufo):
-
+    addUFO2(catalog,ufo)
+    addUFO3(catalog, ufo)
     lt.addLast(catalog["info"], ufo)
 
     ufoInfo = {'datetime':ufo['datetime'],'duration':ufo['duration (seconds)'], 'shape':ufo['shape']} 
@@ -73,6 +77,45 @@ def addUFO(catalog, ufo):
         om.put(tree, date1, ufoInfo)
         mp.put(catalog['Ciudad'],c,tree)
         
+def addUFO2(catalog, ufo):
+    ufoInfo2 = {'datetime':ufo['datetime'],'country':ufo['country'],'city':ufo['city'],'duration':ufo['duration (seconds)'],'shape':ufo['shape'],
+    'latitude':ufo['latitude'],'longitude':ufo['longitude']}
+    
+    redondeado_longitud = round(float(ufo['longitude']),2)
+    redondeado_latitud = round(float(ufo['latitude']),2)
+    existe = om.get(catalog['Longitud'],redondeado_longitud)
+    if existe is not None:
+        arbol2 = rbn.getValue(existe)
+        existe2 = om.get(arbol2, redondeado_latitud)
+        if existe2 is not None:
+            lista = rbn.getValue(existe2)
+            lt.addLast(lista,ufoInfo2)
+        else:
+            nueva_lista = lt.newList('ARRAY_LIST')
+            lt.addLast(nueva_lista,ufoInfo2)
+            om.put(arbol2, redondeado_latitud, nueva_lista)
+    else:
+        nuevo_arbol = om.newMap('RBT',defaultfunction)
+        nueva_list  = lt.newList('ARRAY_LIST')
+        lt.addLast(nueva_list,ufoInfo2)
+        om.put(nuevo_arbol,redondeado_latitud,nueva_list)
+        om.put(catalog['Longitud'],redondeado_longitud,nuevo_arbol)
+
+def addUFO3(catalog, ufo):
+    ufoInfo = {'datetime':ufo['datetime'],'country':ufo['country'],'city':ufo['city'],'duration':ufo['duration (seconds)'],'shape':ufo['shape']}
+    hora = ufo['datetime']
+    hora = hora[11:]
+    hora = hora.replace(':','')
+
+    existe = om.get(catalog['Hora'],hora)
+    if existe is not None:
+        lista_valor = rbn.getValue(existe)
+        lt.addLast(lista_valor,ufoInfo)
+    else:
+        lista_nueva = lt.newList('ARRAY_LIST')
+        lt.addLast(lista_nueva,ufoInfo)
+        om.put(catalog['Hora'], hora, lista_nueva)
+
 # req 1   
 
 def ufoporciudad(catalog,city):
@@ -108,19 +151,126 @@ def ufoporciudad(catalog,city):
 
 # REQ 3
 def ufoporhoraminuto(catalog, lim_inf, lim_sup):
-    ufos_list = catalog['info']
-    lim_inf_fixed = int(lim_inf.replace(':',''))
-    lim_sup_fixed = int(lim_sup.replace(':',''))
-    answer = lt.newList('ARRAY_LIST')
-    for ufo in lt.iterator(ufos_list):
-        time = ufo['datetime']
-        timefixed = int(time[11:].replace(':',''))
-        if timefixed >= lim_inf_fixed and timefixed <= lim_sup_fixed:
-            dict_temporal = {'datetime':ufo['datetime'], 'city':ufo['city'], 'state':ufo['state'], 
-            'country':ufo['country'], 'shape':ufo['shape'], 'duration':ufo['duration (seconds)']}
-            lt.addLast(answer,dict_temporal)
-    x=lt.size(answer)
-    print(x)
+    mapa_horas = catalog['Hora']
+    inf_arreglado = lim_inf.replace(':','')
+    sup_arreglado = lim_sup.replace(':','')
+    valores = om.values(mapa_horas,inf_arreglado,sup_arreglado)
+    mapa_fecha = om.newMap('RBT',defaultfunction)
+    contador = 0
+    for i in lt.iterator(valores):
+        contador += int(lt.size(i))
+        for j in lt.iterator(i):
+            
+            fecha = j['datetime']
+            
+            fecha = fecha.replace('-','').replace(':','').replace(' ','')
+            existe = om.get(mapa_fecha,fecha)
+            if existe is not None:
+                lista = rbn.getValue(existe)
+                lt.addLast(lista, j)
+            else:
+                nueva_lista = lt.newList('ARRAY_LIST')
+                lt.addLast(nueva_lista,j)
+                om.put(mapa_fecha,fecha,nueva_lista)
+    respuesta = lt.newList('ARRAY_LIST')
+    i = 0
+    i2 = 0
+    while i < 3:
+        menor_llave = om.minKey(mapa_fecha)
+        pareja = om.get(mapa_fecha, menor_llave)
+        info = rbn.getValue(pareja)
+        for index in lt.iterator(info):
+            lt.addLast(respuesta,index)
+        om.remove(mapa_fecha,menor_llave)
+        i+=1        
+    while i2 < 3:
+        mayor_llave = om.maxKey(mapa_fecha)
+        pareja = om.get(mapa_fecha, mayor_llave)
+        info = rbn.getValue(pareja)
+        for index in lt.iterator(info):
+            lt.addLast(respuesta,index)
+        om.remove(mapa_fecha,mayor_llave)
+        i2+=1
+    lt.exchange(respuesta, 4, 6)
+    mas_tardios = mas_tardio(catalog)   
+    return 'Hubo un total de: ' + str(contador) + ' avistamientos en ese rango de horas', respuesta, mas_tardios
+
+def mas_tardio(catalog):
+    mapa_copia = om.newMap('RBT', defaultfunction)
+    lista_llaves = om.keySet(catalog['Hora'])
+    respuesta = lt.newList('ARRAY_LIST')
+    for i in lt.iterator(lista_llaves):
+        pareja = om.get(catalog['Hora'],i)
+        valor = rbn.getValue(pareja)
+        om.put(mapa_copia,i,valor)
+    i = 0
+    while i <= 5:
+        llave_grande = om.maxKey(mapa_copia)
+        pareja = om.get(mapa_copia, llave_grande)
+        valor = rbn.getValue(pareja)
+        tamaño = lt.size(valor)
+        info = {'fecha':llave_grande,'Cuenta':tamaño}
+        lt.addLast(respuesta,info)
+        i+=1
+    return respuesta
+
+# REQ 5 
+def ufoporzona(catalog, longitud_inf, longitud_sup, latitud_inf, latitud_sup):
+    decimal1=float(longitud_inf)
+    decimal2=float(longitud_sup)
+    decimal3 = float(latitud_inf)
+    decimal4 = float(latitud_sup)
+    avistamientos_filtrados= om.values(catalog['Longitud'],decimal1,decimal2)
+    respuesta = lt.newList('ARRAY_LIST')
+    for index in lt.iterator(avistamientos_filtrados):
+        avistamientos_filtrados2 = om.values(index,decimal3, decimal4)
+        for i in lt.iterator(avistamientos_filtrados2):
+            for j in lt.iterator(i):
+                lt.addLast(respuesta,j)
+    avistamientos_totales = lt.size(respuesta)
+    mapa_nuevo = om.newMap('RBT',defaultfunction)
+    for i in lt.iterator(respuesta):
+        fecha = i['datetime']
+        fecha = fecha[0:10]
+        fecha = fecha.replace('-','')
+        om.put(mapa_nuevo,fecha,i)
+    lista_respuesta = lt.newList('ARRAY_LIST')
+    i = 0
+    i2 = 0
+    if int(om.size(mapa_nuevo)) > 10:
+        while i < 5:
+            menor_llave = om.minKey(mapa_nuevo)
+            pareja = om.get(mapa_nuevo, menor_llave)
+            info = rbn.getValue(pareja)
+            lt.addLast(lista_respuesta,info)
+            om.remove(mapa_nuevo,menor_llave)
+            i+=1
+        while i2 < 5:
+            mayor_llave = om.maxKey(mapa_nuevo)
+            pareja = om.get(mapa_nuevo, mayor_llave)
+            info = rbn.getValue(pareja)
+            lt.addLast(lista_respuesta,info)
+            om.remove(mapa_nuevo,menor_llave)
+            i2+=1
+        lt.exchange(lista_respuesta,6,10)
+        lt.exchange(lista_respuesta,7,9)
+    else: 
+        ward = False
+        while ward != True:
+            menor_llave = om.minKey(mapa_nuevo)
+            pareja = om.get(mapa_nuevo, menor_llave)
+            info = rbn.getValue(pareja)
+            lt.addLast(lista_respuesta,info)
+            om.remove(mapa_nuevo,menor_llave)
+            if om.size(mapa_nuevo) == 0:
+                ward = True        
+    return 'Los avistamientos totales en esa zona fueron: ' + str(avistamientos_totales), lista_respuesta
+
+# REQ 6
+def mapazona(catalog, longitud_inf, longitud_sup, latitud_inf, latitud_sup):
+    info = ufoporzona(catalog, longitud_inf, longitud_sup, latitud_inf, latitud_sup)
+    mapa = folium.Map(location=[45.5236, -122.6750])
+    print(mapa)
 # Funciones para creacion de datos
 
 # Funciones de consulta

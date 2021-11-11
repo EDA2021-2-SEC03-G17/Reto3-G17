@@ -71,6 +71,14 @@ def ufoporciudad(catalog,city):
 def ufoporhoraminuto(catalog,lim_inf,lim_sup):
     return model.ufoporhoraminuto(catalog,lim_inf,lim_sup)
 
+#REQ 5
+def ufoporzona(catalog, longitud_inf, longitud_sup, latitud_inf, latitud_sup):
+    return model.ufoporzona(catalog,longitud_inf,longitud_sup,latitud_inf,latitud_sup)
+
+# REQ 6
+def mapazona(catalog,longitud_inf, longitud_sup, latitud_inf, latitud_sup):
+    return model.mapazona(catalog,longitud_inf, longitud_sup, latitud_inf, latitud_sup)
+
 #CONSULTA
 def listsize(listaufo):
     return model.listsize(listaufo)

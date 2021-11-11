@@ -38,6 +38,8 @@ def printMenu():
     print("1 ) Cargar información en el catálogo")
     print("2 ) Contar los avistamientos en una ciudad")
     print("4 ) Contar los avistamientos por hora/minutos del día")
+    print("6 ) Contar los avistamientos en una zona geografica")
+    print("7 ) Contar los avistamientos en una zona geografica y ver el mapa")
     print("0 ) Salir")
     print("___________________________________________")
 
@@ -59,6 +61,21 @@ def req3(catalog):
     lim_sup=input("Ingrese el limite superior en formato HH: MM\n")
     return controller.ufoporhoraminuto(catalog,lim_inf, lim_sup)
 
+#REQ5 [6]
+def req5(catalog):
+    longitud_inf=input("Ingrese el limite inferior de la longitud\n")
+    longitud_sup=input("Ingrese el limite superior de la longitud\n")
+    latitud_inf=input("Ingrese el limite inferior de la latitud\n")
+    latitud_sup=input("Ingrese el limite superior de la latitud\n")
+    return controller.ufoporzona(catalog,longitud_inf, longitud_sup, latitud_inf, latitud_sup)   
+
+#REQ6 [7]
+def req6(catalog):
+    longitud_inf=input("Ingrese el limite inferior de la longitud\n")
+    longitud_sup=input("Ingrese el limite superior de la longitud\n")
+    latitud_inf=input("Ingrese el limite inferior de la latitud\n")
+    latitud_sup=input("Ingrese el limite superior de la latitud\n")
+    return controller.mapazona(catalog,longitud_inf, longitud_sup, latitud_inf, latitud_sup) 
 #CONSULTA
 
 def listSize(listaufo):
@@ -73,7 +90,7 @@ while True:
         catalog = initCatalog()
         print("Cargando información de los archivos ....")
         loadData(catalog)
-        print(catalog['Ciudad'])
+    
     elif int(inputs[0]) == 2:
         listaufo=req1(catalog)
         print(listaufo)
@@ -81,6 +98,15 @@ while True:
     elif int(inputs[0]) == 4:
         listaufo=req3(catalog)
         print(listaufo)
+
+    elif int(inputs[0]) == 6:
+        listaufo=req5(catalog)
+        print(listaufo)
+    
+    elif int(inputs[0]) == 7:
+        listaufo=req6(catalog)
+        print(listaufo)
+
     else:
         sys.exit(0)
 sys.exit(0)

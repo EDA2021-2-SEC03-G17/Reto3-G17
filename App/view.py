@@ -49,8 +49,8 @@ def printMenu():
     print("1 ) Cargar información en de UFOS")
     print("2 ) Contar los avistamientos en una ciudad")
     print("3 ) Contar los avistamientos por duración")
-    print("5 ) Contar los avistamientos en un rango de fechas")
     print("4 ) Contar los avistamientos por hora/minutos del día")
+    print("5 ) Contar los avistamientos en un rango de fechas")
     print("6 ) Contar los avistamientos en una zona geografica")
     print("7 ) Contar los avistamientos en una zona geografica y ver el mapa")
     print("0 ) Salir")
@@ -75,6 +75,12 @@ def avistamientos_duracion(catalog):
     duracion_en_rango=controller.sightingsdurationrange(catalog,fecha_inicio,fecha_fin)
     return duracion_en_rango
 
+#REQ3 [4]
+def req3(catalog):
+    lim_inf=input("Ingrese el limite inferior en formato HH: MM\n")
+    lim_sup=input("Ingrese el limite superior en formato HH: MM\n")
+    return controller.ufoporhoraminuto(catalog,lim_inf, lim_sup)
+
 #REQ4 [5] PRUEBA (1945-08-06/1984-11-15)
 def avistamientos_fechas(catalog):
     fecha_inicio= input("Ingrese límite inferior en formato AAAA-MM-DD: ")
@@ -86,12 +92,6 @@ def avistamientos_fechas(catalog):
     fecha_fin= int(fecha_fin.replace("-",''))
     fechas_en_rango=controller.sightingsperdate(catalog,fecha_inicio,fecha_fin)
     return fechas_en_rango
-    
-#REQ3 [4]
-def req3(catalog):
-    lim_inf=input("Ingrese el limite inferior en formato HH: MM\n")
-    lim_sup=input("Ingrese el limite superior en formato HH: MM\n")
-    return controller.ufoporhoraminuto(catalog,lim_inf, lim_sup)
 
 #REQ5 [6]
 def req5(catalog):
@@ -125,10 +125,9 @@ while True:
         loadData(catalog)
     
 
-    elif int(inputs[0]) == 2:                                                
+    elif int(inputs[0]) == 2:
         listaufo=req1(catalog)
-        len=listSize(listaufo)
-        print("TOTAL UFOS VISTOS: "+ str(len))
+        print(listaufo)
 
     elif int(inputs[0]) == 3:
         mayor=controller.max_duration(catalog)
@@ -143,6 +142,9 @@ while True:
         for elements in lt.iterator(muestra2):
             print(elements)
 
+    elif int(inputs[0]) == 4:
+        listaufo=req3(catalog)
+        print(listaufo)
 
     elif int(inputs[0]) == 5:
         mayor=controller.min_date(catalog)
@@ -156,22 +158,14 @@ while True:
         for elements in lt.iterator(muestra2):
             print(elements)
         
-                    
-    elif int(inputs[0]) == 2:
-        listaufo=req1(catalog)
-        print(listaufo)
-    
-    elif int(inputs[0]) == 4:
-        listaufo=req3(catalog)
-        print(listaufo)
-
     elif int(inputs[0]) == 6:
         listaufo=req5(catalog)
-        print(listaufo)
-    
+        print(listaufo)                 
+
     elif int(inputs[0]) == 7:
         listaufo=req6(catalog)
-        print(listaufo)
+        print(listaufo) 
+        print('Revisa la carpeta del reto para ver el mapa :)')
 
     else:
         sys.exit(0)

@@ -133,11 +133,7 @@ def addUFO3(catalog, ufo):
         om.put(catalog['Hora'], hora, lista_nueva)
 
 # req 1   
-           
-    else:
-        info=lt.newList("ARRAY_LIST",cmpfunction=compareCountryCity, key=None)
-        lt.addLast(info,ufoInfo)
-        om.put(catalog["Duracion"], duration, info)
+
 
 def ufobydate(catalog,ufo):
     
@@ -311,18 +307,14 @@ def ufoporzona(catalog, longitud_inf, longitud_sup, latitud_inf, latitud_sup):
 # REQ 6
 def mapazona(catalog, longitud_inf, longitud_sup, latitud_inf, latitud_sup):
     info = ufoporzona(catalog, longitud_inf, longitud_sup, latitud_inf, latitud_sup)
-    mapa = folium.Map(location=[45.5236, -122.6750])
-    print(mapa)
+    mapa = folium.Map(location=[latitud_sup,longitud_sup],min_lat=latitud_inf,max_lat=latitud_sup,min_lon=longitud_inf,max_lon=longitud_sup)
+    mapa.save('index.html')
+    return info, mapa.save('index.html')
 # Funciones para creacion de datos
 
 # Funciones de consulta
 def listsize(listaufo):
     return lt.size(listaufo)
-
-#Requerimiento 1
-def citysightings(ciudad):
-    return None
-
 
 #Requerimiento 2
 def total_sightings(catalog):
@@ -343,9 +335,6 @@ def sightingsdurationrange(catalog,lim_inferior, lim_superior):
     muestra = first_last_three (duracion_rango)
     return muestra, size
 
-#Requerimiento 3
-def sightingsperhourminute(lim_inferior,lim_superior):
-    return None
 
 #Requerimiento 4
 def min_date(catalog):
@@ -401,14 +390,6 @@ def first_last_three (rango):
             tamanio_muestra-=tam
 
     return  firstUFOS, lastUFOS
-
-#Requerimiento 5
-def countsightingsbyzone(lim_inferior,lim_superior):
-    return None
-
-#Requerimiento 6
-def countsightingsbyzone(lim_inferior,lim_superior):
-    return None
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 

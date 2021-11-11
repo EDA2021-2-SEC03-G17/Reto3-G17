@@ -123,7 +123,6 @@ while True:
         catalog = initCatalog()
         print("Cargando información de los archivos ....")
         loadData(catalog)
-    
 
     elif int(inputs[0]) == 2:
         listaufo=req1(catalog)

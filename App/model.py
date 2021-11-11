@@ -92,7 +92,11 @@ def ufobyduration(catalog,ufo):
         llave=me.getValue(inCatalog)
         lt.addLast(llave,ufoInfo)
         sa.sort(llave, compareCountryCity)
-        
+           
+    else:
+        info=lt.newList("ARRAY_LIST",cmpfunction=compareCountryCity)
+        lt.addLast(info,ufoInfo)
+        om.put(catalog["Duracion"], duration, info)   
 def addUFO2(catalog, ufo):
     ufoInfo2 = {'datetime':ufo['datetime'],'country':ufo['country'],'city':ufo['city'],'duration':ufo['duration (seconds)'],'shape':ufo['shape'],
     'latitude':ufo['latitude'],'longitude':ufo['longitude']}

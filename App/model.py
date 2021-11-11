@@ -312,8 +312,6 @@ def compareCountryCity (ufo1,ufo2):
         ufo1["country"]="zz"   
     if ufo2["country"]=="":
         ufo2["country"]="zz"  
-    #citystate = ufo1["country"] + ufo1["city"]
-    #citystate2 = ufo2["country"] + ufo2["city"]
     citystate = ufo1["city"]
     citystate2 = ufo2["city"]
     return citystate < citystate2
@@ -323,8 +321,6 @@ def compareCountryCity2 (ufo1,ufo2):
         ufo1["country"]="zz"   
     if ufo2["country"]=="":
         ufo2["country"]="zz"  
-    #citystate = ufo1["country"] + ufo1["city"]
-    #citystate2 = ufo2["country"] + ufo2["city"]
     citystate = ufo1["city"]
     citystate2 = ufo2["city"]
     return citystate > citystate2

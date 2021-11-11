@@ -24,7 +24,7 @@
  * Dario Correal - Version inicial
  """
 
-
+from DISClib.DataStructures.bst import put
 from DISClib.DataStructures.arraylist import defaultfunction
 import config as cf
 from DISClib.ADT import list as lt
@@ -37,24 +37,26 @@ import datetime
 import folium
 assert cf
 
-"""
-Se define la estructura de un catálogo de videos. El catálogo tendrá dos listas, una para los videos, otra para las categorias de
-los mismos.
-"""
+
+# Construccion de modelos
 def newCatalog():
     catalogo = {}
     catalogo["info"]= lt.newList('SINGLE_LINKED', compareDates)
     catalogo['Ciudad'] = mp.newMap(15225, maptype='PROBING', loadfactor=4.0)
     catalogo['Longitud'] = om.newMap('RBT',defaultfunction)
     catalogo['Hora'] = om.newMap('RBT', defaultfunction)
+    catalogo['Duracion'] = om.newMap(omaptype="RBT", comparefunction=compareDuration)
+    catalogo['Fechas'] = om.newMap(omaptype="RBT", comparefunction=compareDate)
+
     return catalogo
-# Construccion de modelos
 
 # Funciones para agregar informacion al catalogo
 def addUFO(catalog, ufo):
     addUFO2(catalog,ufo)
     addUFO3(catalog, ufo)
     lt.addLast(catalog["info"], ufo)
+    ufobyduration(catalog,ufo)
+    ufobydate(catalog,ufo)
 
     ufoInfo = {'datetime':ufo['datetime'],'duration':ufo['duration (seconds)'], 'shape':ufo['shape']} 
 
@@ -76,6 +78,20 @@ def addUFO(catalog, ufo):
         tree=om.newMap(omaptype='RBT', comparefunction=defaultfunction)
         om.put(tree, date1, ufoInfo)
         mp.put(catalog['Ciudad'],c,tree)
+
+def ufobyduration(catalog,ufo):
+    
+    ufoInfo = {'datetime':ufo['datetime'],'city': ufo['city'], 'duration (sec)': ufo['duration (seconds)'],'shape':ufo['shape'],
+    'state':ufo['state'],'country':ufo['country']} 
+
+    duration=float(ufo['duration (seconds)'])
+
+    inCatalog=om.get(catalog['Duracion'], duration)
+
+    if inCatalog is not None:
+        llave=me.getValue(inCatalog)
+        lt.addLast(llave,ufoInfo)
+        sa.sort(llave, compareCountryCity)
         
 def addUFO2(catalog, ufo):
     ufoInfo2 = {'datetime':ufo['datetime'],'country':ufo['country'],'city':ufo['city'],'duration':ufo['duration (seconds)'],'shape':ufo['shape'],
@@ -117,7 +133,33 @@ def addUFO3(catalog, ufo):
         om.put(catalog['Hora'], hora, lista_nueva)
 
 # req 1   
+           
+    else:
+        info=lt.newList("ARRAY_LIST",cmpfunction=compareCountryCity, key=None)
+        lt.addLast(info,ufoInfo)
+        om.put(catalog["Duracion"], duration, info)
 
+def ufobydate(catalog,ufo):
+    
+    ufoInfo = {'datetime':ufo['datetime'],'city': ufo['city'], 'duration (sec)': ufo['duration (seconds)'],'shape':ufo['shape'],
+    'country':ufo['country']} 
+
+    date=ufo["datetime"].split(" ")
+    date=date[0].replace("-","")
+    date=int(date)
+
+    inCatalog=om.get(catalog['Fechas'], date)
+
+    if inCatalog is not None:
+        llave=me.getValue(inCatalog)
+        lt.addLast(llave,ufoInfo)
+         
+    else:
+        info=lt.newList("ARRAY_LIST",cmpfunction=compareDatetime, key=None)
+        lt.addLast(info,ufoInfo)
+        om.put(catalog["Fechas"], date, info)
+
+# req 1   
 def ufoporciudad(catalog,city):
     mapa = catalog['Ciudad']
     avistamientos = mp.size(mapa)
@@ -277,6 +319,97 @@ def mapazona(catalog, longitud_inf, longitud_sup, latitud_inf, latitud_sup):
 def listsize(listaufo):
     return lt.size(listaufo)
 
+#Requerimiento 1
+def citysightings(ciudad):
+    return None
+
+
+#Requerimiento 2
+def total_sightings(catalog):
+    total=om.size(catalog)
+    return total
+
+def max_duration(catalog):
+    avistamiento_mayor_duracion=om.maxKey(catalog)
+    return avistamiento_mayor_duracion
+
+def sightingsdurationrange(catalog,lim_inferior, lim_superior):
+
+    duracion_rango=om.values(catalog,lim_inferior, lim_superior)
+    size = 0
+    for element in lt.iterator(duracion_rango):
+        size+=lt.size(element)
+    #print(duracion_rango)
+    muestra = first_last_three (duracion_rango)
+    return muestra, size
+
+#Requerimiento 3
+def sightingsperhourminute(lim_inferior,lim_superior):
+    return None
+
+#Requerimiento 4
+def min_date(catalog):
+    avistamiento_menor_fecha=str(om.minKey(catalog))
+    avistamiento_menor_fecha=avistamiento_menor_fecha[0:4]+"-"+avistamiento_menor_fecha[4:6]+"-"+avistamiento_menor_fecha[6:8]
+    return avistamiento_menor_fecha
+
+def sightingsperdate(catalog,lim_inferior,lim_superior):
+
+    fechas_rango=om.values(catalog,lim_inferior, lim_superior)
+    size=lt.size(fechas_rango)
+    if size==0:
+        muestra = "empty"
+    else:
+        muestra = first_last_three (fechas_rango) 
+    return muestra, size
+
+def first_last_three (rango):
+
+    tamanio_muestra=3
+    firstUFOS=lt.newList("ARRAY_LIST")
+    lastUFOS=lt.newList("ARRAY_LIST")
+
+    while tamanio_muestra!=0:
+        UFOS=lt.removeFirst(rango)
+        tam= lt.size(UFOS)
+        if tam>=3:
+            primerUFOS=lt.subList(UFOS,1,tamanio_muestra)
+            for UFOSlist in lt.iterator(primerUFOS):
+                lt.addLast( firstUFOS,UFOSlist)
+            tamanio_muestra=0
+        else:
+            primerUFOS=lt.subList(UFOS,1,tam)
+            for UFOSlist in lt.iterator(primerUFOS):
+                lt.addLast( firstUFOS,UFOSlist)
+            tamanio_muestra-=tam
+
+    tamanio_muestra=3
+    while tamanio_muestra!=0:
+        ultimoUFOS=lt.removeLast(rango)
+        ultimoUFOS=sa.sort(ultimoUFOS,compareCountryCity2)
+        tam= lt.size(ultimoUFOS)
+        if tam>=3:
+            ultimoUFOS=lt.subList(ultimoUFOS,1,tamanio_muestra)
+            for UFOSlist in lt.iterator(ultimoUFOS):
+                lt.addFirst( lastUFOS,UFOSlist)
+            tamanio_muestra=0
+
+        else:
+            ultimoUFOS=lt.subList(ultimoUFOS,1,tam)
+            for UFOSlist in lt.iterator(ultimoUFOS):
+                lt.addFirst( lastUFOS,UFOSlist)
+            tamanio_muestra-=tam
+
+    return  firstUFOS, lastUFOS
+
+#Requerimiento 5
+def countsightingsbyzone(lim_inferior,lim_superior):
+    return None
+
+#Requerimiento 6
+def countsightingsbyzone(lim_inferior,lim_superior):
+    return None
+
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 def BYDATE(DATE1,DATE2):
@@ -316,3 +449,42 @@ def compareDates(date1, date2):
     else:
         return -1
 
+def compareDuration (duration1, duration2):
+
+    if float(duration1) == float(duration2):
+        return 0
+    elif float(duration1) > float(duration2):
+        return 1
+    else:
+        return -1
+
+def compareCountryCity (ufo1,ufo2):
+    if ufo1["country"]=="":
+        ufo1["country"]="zz"   
+    if ufo2["country"]=="":
+        ufo2["country"]="zz"  
+    citystate = ufo1["city"]
+    citystate2 = ufo2["city"]
+    return citystate < citystate2
+
+def compareCountryCity2 (ufo1,ufo2):
+    if ufo1["country"]=="":
+        ufo1["country"]="zz"   
+    if ufo2["country"]=="":
+        ufo2["country"]="zz"  
+    citystate = ufo1["city"]
+    citystate2 = ufo2["city"]
+    return citystate > citystate2
+
+def compareDate (date1,date2):
+
+    if float(date1) == float(date2):
+        return 0
+    elif float(date1) > float(date2):
+        return 1
+    else:
+        return -1
+
+def compareDatetime (date1,date2):
+
+    return date1<date2

@@ -29,19 +29,32 @@ import controller
 from DISClib.ADT import orderedmap as om
 from DISClib.ADT import list as lt
 
+ufo="""                 _                
+                /\              
+                \ \  \__/ \__/  / 
+                 \ \ (oo) (oo) /    
+                  \_\/~~\_/~~\_
+                 _.-~===========~-._
+                (___/_______________)
+                   /  \_______/"""
+
 #MENU
 def printMenu():
-    print("___________________________________________")
-    print("    BIENVENIDO AL CATALOGO DE UFO's")
-    print("___________________________________________")
     print("")
-    print("1 ) Cargar información en el catálogo")
+    print(ufo)
+    print("")
+    print("           BIENVENIDO AL CATALOGO DE UFO's")
+    print("_______________________________________________________")
+    print("")
+    print("1 ) Cargar información en de UFOS")
     print("2 ) Contar los avistamientos en una ciudad")
+    print("3 ) Contar los avistamientos por duración")
+    print("5 ) Contar los avistamientos en un rango de fechas")
     print("4 ) Contar los avistamientos por hora/minutos del día")
     print("6 ) Contar los avistamientos en una zona geografica")
     print("7 ) Contar los avistamientos en una zona geografica y ver el mapa")
     print("0 ) Salir")
-    print("___________________________________________")
+    print("________________________________________________________")
 
 #CARGA DE DATOS [1]
 def initCatalog():
@@ -55,6 +68,25 @@ def req1(catalog):
     city=input("Ingrese el nombre de la ciudad a consultar.")
     return controller.ufoporciudad(catalog,city)
 
+#REQ2 [3] PRUEBA (30.0/150.0)
+def avistamientos_duracion(catalog):
+    fecha_inicio=float(input("Ingrese la duracion limite minima: "))
+    fecha_fin=(float(input("Ingrese duracion limite maxima: ")))
+    duracion_en_rango=controller.sightingsdurationrange(catalog,fecha_inicio,fecha_fin)
+    return duracion_en_rango
+
+#REQ4 [5] PRUEBA (1945-08-06/1984-11-15)
+def avistamientos_fechas(catalog):
+    fecha_inicio= input("Ingrese límite inferior en formato AAAA-MM-DD: ")
+    fecha_fin=input("Ingrese límite superior en formato AAAA-MM-DD: ")
+    total=controller.total_sightings(catalog)
+    print("_______________________________________________________")
+    print("There are {} sightings between: {} and {} ".format(total, fecha_inicio, fecha_fin))
+    fecha_inicio= int(fecha_inicio.replace("-",''))
+    fecha_fin= int(fecha_fin.replace("-",''))
+    fechas_en_rango=controller.sightingsperdate(catalog,fecha_inicio,fecha_fin)
+    return fechas_en_rango
+    
 #REQ3 [4]
 def req3(catalog):
     lim_inf=input("Ingrese el limite inferior en formato HH: MM\n")
@@ -83,6 +115,7 @@ def listSize(listaufo):
 
 catalog = None
 
+
 while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
@@ -91,6 +124,39 @@ while True:
         print("Cargando información de los archivos ....")
         loadData(catalog)
     
+
+    elif int(inputs[0]) == 2:                                                
+        listaufo=req1(catalog)
+        len=listSize(listaufo)
+        print("TOTAL UFOS VISTOS: "+ str(len))
+
+    elif int(inputs[0]) == 3:
+        mayor=controller.max_duration(catalog)
+        muestra,tamanio=avistamientos_duracion(catalog)
+        print("_______________________________________________________")
+        print("The longest UFO sightings is: " + str(mayor))
+        print("There are {} sightings".format(tamanio))
+        print("The first 3 and last 3 UFO sightings in the duration time are: ")
+        muestra1,muestra2=muestra
+        for elements in lt.iterator(muestra1):
+            print(elements)
+        for elements in lt.iterator(muestra2):
+            print(elements)
+
+
+    elif int(inputs[0]) == 5:
+        mayor=controller.min_date(catalog)
+        muestra,tamanio=avistamientos_fechas(catalog)
+        print("The longest UFO sightings is: " + str(mayor))
+        print("There are {} sightings".format(tamanio))
+        print("The first 3 and last 3 UFO sightings in the duration time are: ")
+        muestra1,muestra2=muestra
+        for elements in lt.iterator(muestra1):
+            print(elements)
+        for elements in lt.iterator(muestra2):
+            print(elements)
+        
+                    
     elif int(inputs[0]) == 2:
         listaufo=req1(catalog)
         print(listaufo)

@@ -67,6 +67,23 @@ def loadUFO(catalog):
 def ufoporciudad(catalog,city):
     return model.ufoporciudad(catalog,city)
 
+#REQ 2
+def sightingsdurationrange(catalog,lim_inferior,lim_superior):
+    return model.sightingsdurationrange(catalog['Duracion'],lim_inferior,lim_superior)
+
+def max_duration(catalog):
+    return model.max_duration(catalog["Duracion"])
+
+#REQ 4
+def total_sightings(catalog):
+    return model.total_sightings(catalog["Fechas"])
+    
+def min_date(catalog):
+    return model.min_date(catalog["Fechas"])
+
+def sightingsperdate(catalog,lim_inferior,lim_superior):
+    return model.sightingsperdate(catalog['Fechas'],lim_inferior,lim_superior)
+
 #REQ 3
 def ufoporhoraminuto(catalog,lim_inf,lim_sup):
     return model.ufoporhoraminuto(catalog,lim_inf,lim_sup)
@@ -84,3 +101,14 @@ def listsize(listaufo):
     return model.listsize(listaufo)
 
 # Funciones de consulta sobre el catálogo
+
+
+def sightingsperhourminute(lim_inferior,lim_superior):
+    return model.sightingsperhourminute(lim_inferior,lim_superior)
+
+
+def countsightingsbyzone(lim_inferior,lim_superior):
+    return model.countsightingsbyzone(lim_inferior,lim_superior)
+
+def countsightingsbyzone(lim_inferior,lim_superior):
+    return model.seesightingsbyzone(lim_inferior,lim_superior)
